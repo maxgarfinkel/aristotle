@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useWizardContext } from '../context/WizardContext'
 
 interface UseModuleCountResult {
   value: string
@@ -8,9 +8,9 @@ interface UseModuleCountResult {
 }
 
 export function useModuleCount(): UseModuleCountResult {
-  const [value, setValue] = useState('')
-  const num = Number(value)
-  const isValid = value.trim() !== '' && Number.isInteger(num) && num >= 1
+  const { countInput, setCountInput } = useWizardContext()
+  const num = Number(countInput)
+  const isValid = countInput.trim() !== '' && Number.isInteger(num) && num >= 1
   const count = isValid ? num : null
-  return { value, count, isValid, setValue }
+  return { value: countInput, count, isValid, setValue: setCountInput }
 }

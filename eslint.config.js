@@ -28,6 +28,7 @@ export default defineConfig([
         { type: 'pages',      pattern: 'src/pages/**/*' },
         { type: 'components', pattern: 'src/components/**/*' },
         { type: 'hooks',      pattern: 'src/hooks/**/*' },
+        { type: 'context',    pattern: 'src/context/**/*' },
         { type: 'services',   pattern: 'src/services/**/*' },
         { type: 'types',      pattern: 'src/types/**/*' },
       ],
@@ -41,7 +42,8 @@ export default defineConfig([
         rules: [
           { from: 'pages',      allow: ['components', 'hooks', 'types'] },
           { from: 'components', allow: ['hooks', 'types'] },
-          { from: 'hooks',      allow: ['services', 'types'] },
+          { from: 'hooks',      allow: ['context', 'services', 'types'] },
+          { from: 'context',    allow: ['context', 'types'] },
           { from: 'services',   allow: ['types'] },
           { from: 'types',      allow: [] },
         ],

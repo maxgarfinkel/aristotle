@@ -35,15 +35,13 @@ export default function AssessmentDetailsPage() {
               Assessment details
             </h1>
             <p className="text-base leading-relaxed text-gray-600">
-              Enter the details for each assessment. Percentages for each module must add up to 100%.
+              Enter the details for each assessment.
             </p>
           </div>
 
           <div className="flex flex-col gap-6">
             {modules.map((module, moduleIndex) => {
               const assessments = moduleEntries[moduleIndex] ?? []
-              const total = assessments.reduce((s, a) => s + Number(a.percentageInput || 0), 0)
-              const totalOk = Math.abs(total - 100) < 0.01
 
               return (
                 <div
@@ -101,12 +99,6 @@ export default function AssessmentDetailsPage() {
                       </fieldset>
                     ))}
                   </div>
-
-                  <p
-                    className={`mt-4 text-sm font-medium ${totalOk ? 'text-green-600' : 'text-red-500'}`}
-                  >
-                    Total: {total}%
-                  </p>
                 </div>
               )
             })}

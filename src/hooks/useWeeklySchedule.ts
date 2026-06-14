@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useWizardContext } from '../context/WizardContext'
 import type { WeeklySchedule } from '../types/schedule'
 
 export const DAYS_OF_WEEK = [
@@ -19,13 +19,7 @@ interface UseWeeklyScheduleResult {
 }
 
 export function useWeeklySchedule(): UseWeeklyScheduleResult {
-  const [schedule, setSchedule] = useState<WeeklySchedule>(() =>
-    DAYS_OF_WEEK.map(() => ({
-      enabled: true,
-      hoursInput: '',
-      minutesInput: '',
-    })),
-  )
+  const { schedule, toggleScheduleDay, updateScheduleDay } = useWizardContext()
 
   const isValid =
     schedule.some((day) => day.enabled) &&
@@ -44,17 +38,5 @@ export function useWeeklySchedule(): UseWeeklyScheduleResult {
         )
       })
 
-  const toggleDay = (dayIndex: number) => {
-    setSchedule((prev) =>
-      prev.map((day, i) => (i === dayIndex ? { ...day, enabled: !day.enabled } : day)),
-    )
-  }
-
-  const updateDay = (dayIndex: number, field: 'hoursInput' | 'minutesInput', value: string) => {
-    setSchedule((prev) =>
-      prev.map((day, i) => (i === dayIndex ? { ...day, [field]: value } : day)),
-    )
-  }
-
-  return { schedule, isValid, toggleDay, updateDay }
+  return { schedule, isValid, toggleDay: toggleScheduleDay, updateDay: updateScheduleDay }
 }

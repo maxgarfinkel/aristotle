@@ -43,11 +43,6 @@ describe('AssessmentDetailsPage', () => {
     expect(screen.getByRole('button', { name: /next/i })).toBeDisabled()
   })
 
-  it('shows a percentage total for each module', async () => {
-    await renderRoute('/assessments', { modules: singleModule })
-    expect(screen.getByText('Total: 0%')).toBeInTheDocument()
-  })
-
   it('navigates back to module details on Back click', async () => {
     await renderRoute('/assessments', { modules: twoModules })
     await userEvent.click(screen.getByRole('link', { name: /back/i }))

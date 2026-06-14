@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useEffect } from 'react'
 import type { ModuleSummary, AssessmentFormEntry } from '../types/module'
+import { useWizardContext } from '../context/WizardContext'
 
 interface UseAssessmentDetailsResult {
   moduleEntries: AssessmentFormEntry[][]
@@ -19,32 +20,50 @@ function tomorrow(): string {
 }
 
 export function useAssessmentDetails(modules: ModuleSummary[]): UseAssessmentDetailsResult {
-  const [moduleEntries, setModuleEntries] = useState<AssessmentFormEntry[][]>(() =>
-    modules.map((m) =>
-      Array.from({ length: m.assessmentCount }, () => ({
-        name: '',
-        percentageInput: '',
-        startDate: tomorrow(),
-        deadline: '',
-      })),
-    ),
-  )
+  const { assessmentEntries, setAssessmentEntries } = useWizardContext()
 
-  const isValid = moduleEntries.every((assessments) => {
-    if (assessments.length === 0) return false
-    const allFieldsValid = assessments.every((a) => {
-      const pct = Number(a.percentageInput)
-      return (
-        a.name.trim() !== '' &&
-        pct > 0 &&
-        pct <= 100 &&
-        a.deadline !== '' &&
-        a.deadline > a.startDate
-      )
+  // Reconcile context assessment rows with the current module structure.
+  // Uses the functional setState form so we read the latest stored entries
+  // without listing assessmentEntries as a dep (which would re-run on every
+  // field edit). Returns the same row reference when length is unchanged so
+  // that the provider's identity check avoids a state update.
+  useEffect(() => {
+    setAssessmentEntries((current) => {
+      const reconciled = modules.map((m, i) => {
+        const row = current[i] ?? []
+        if (row.length === m.assessmentCount) return row
+        if (m.assessmentCount < row.length) return row.slice(0, m.assessmentCount)
+        return [
+          ...row,
+          ...Array.from({ length: m.assessmentCount - row.length }, () => ({
+            name: '',
+            percentageInput: '',
+            startDate: tomorrow(),
+            deadline: '',
+          })),
+        ]
+      })
+      const unchanged =
+        reconciled.length === current.length && reconciled.every((row, i) => row === current[i])
+      return unchanged ? current : reconciled
     })
-    const sum = assessments.reduce((s, a) => s + Number(a.percentageInput), 0)
-    return allFieldsValid && Math.abs(sum - 100) < 0.01
-  })
+  }, [modules, setAssessmentEntries])
+
+  const isValid =
+    assessmentEntries.length > 0 &&
+    assessmentEntries.every((assessments) => {
+      if (assessments.length === 0) return false
+      return assessments.every((a) => {
+        const pct = Number(a.percentageInput)
+        return (
+          a.name.trim() !== '' &&
+          pct > 0 &&
+          pct <= 100 &&
+          a.deadline !== '' &&
+          a.deadline > a.startDate
+        )
+      })
+    })
 
   const updateField = (
     moduleIndex: number,
@@ -52,7 +71,7 @@ export function useAssessmentDetails(modules: ModuleSummary[]): UseAssessmentDet
     field: keyof AssessmentFormEntry,
     value: string,
   ) => {
-    setModuleEntries((prev) =>
+    setAssessmentEntries((prev) =>
       prev.map((assessments, mi) =>
         mi === moduleIndex
           ? assessments.map((a, ai) => (ai === assessmentIndex ? { ...a, [field]: value } : a))
@@ -61,5 +80,5 @@ export function useAssessmentDetails(modules: ModuleSummary[]): UseAssessmentDet
     )
   }
 
-  return { moduleEntries, isValid, updateField }
+  return { moduleEntries: assessmentEntries, isValid, updateField }
 }
