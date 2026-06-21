@@ -41,10 +41,10 @@ export default defineConfig([
         default: 'disallow',
         rules: [
           { from: 'pages',      allow: ['components', 'hooks', 'types'] },
-          { from: 'components', allow: ['hooks', 'types'] },
+          { from: 'components', allow: ['components', 'hooks', 'types'] },
           { from: 'hooks',      allow: ['context', 'services', 'types'] },
           { from: 'context',    allow: ['context', 'types'] },
-          { from: 'services',   allow: ['types'] },
+          { from: 'services',   allow: ['services', 'types'] },
           { from: 'types',      allow: [] },
         ],
       }],

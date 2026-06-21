@@ -1,4 +1,5 @@
 import { useWizardContext } from '../context/WizardContext'
+import { moduleCountSchema } from '../services/schemas'
 
 interface UseModuleCountResult {
   value: string
@@ -9,8 +10,7 @@ interface UseModuleCountResult {
 
 export function useModuleCount(): UseModuleCountResult {
   const { numberOfModules, setNumberOfModules } = useWizardContext()
-  const num = Number(numberOfModules)
-  const isValid = numberOfModules.trim() !== '' && Number.isInteger(num) && num >= 1
-  const count = isValid ? num : null
+  const isValid = moduleCountSchema.safeParse(numberOfModules).success
+  const count = isValid ? Number(numberOfModules) : null
   return { value: numberOfModules, count, isValid, setValue: setNumberOfModules }
 }

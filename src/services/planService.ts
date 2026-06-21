@@ -1,12 +1,7 @@
 import type { ScheduleWizard } from '../types/wizard'
 import type { WeeklySchedule } from '../types/schedule'
 import type { DayPlanEntry, AssessmentSummary, StudyPlan } from '../types/plan'
-
-function nextDate(date: string): string {
-  const [y, m, d] = date.split('-').map(Number)
-  const next = new Date(Date.UTC(y!, m! - 1, d! + 1))
-  return next.toISOString().substring(0, 10)
-}
+import { addDays } from './dateUtils'
 
 function getDayMinutes(date: string, schedule: WeeklySchedule): number {
   const [y, m, d] = date.split('-').map(Number)
@@ -29,7 +24,7 @@ function computeTotalAvailableMinutes(
   let date = startDate
   while (date <= endDate) {
     total += getDayMinutes(date, schedule)
-    date = nextDate(date)
+    date = addDays(date, 1)
   }
   return total
 }
@@ -86,7 +81,7 @@ export function buildStudyPlan(wizard: ScheduleWizard): StudyPlan {
   for (const assessment of sorted) {
     // Don't start before the assessment's own start date
     while (currentDate < assessment.startDate) {
-      currentDate = nextDate(currentDate)
+      currentDate = addDays(currentDate, 1)
       minutesUsedToday = 0
     }
 
@@ -110,12 +105,12 @@ export function buildStudyPlan(wizard: ScheduleWizard): StudyPlan {
         minutesUsedToday += spent
 
         if (minutesUsedToday >= dayCapacity) {
-          currentDate = nextDate(currentDate)
+          currentDate = addDays(currentDate, 1)
           minutesUsedToday = 0
         }
         // else: time remains on this day; next assessment may start here
       } else {
-        currentDate = nextDate(currentDate)
+        currentDate = addDays(currentDate, 1)
         minutesUsedToday = 0
       }
     }

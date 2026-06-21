@@ -4,7 +4,9 @@ interface FormFieldProps {
   type?: 'text' | 'number' | 'date'
   value: string
   onChange: (value: string) => void
+  disabled?: boolean
   min?: string | number
+  max?: string | number
   step?: number
   placeholder?: string
   hint?: string
@@ -16,7 +18,9 @@ export default function FormField({
   type = 'text',
   value,
   onChange,
+  disabled,
   min,
+  max,
   step,
   placeholder,
   hint,
@@ -38,7 +42,9 @@ export default function FormField({
         type={type}
         value={value}
         onChange={(e) => onChange(e.target.value)}
+        disabled={disabled}
         min={min}
+        max={max}
         step={step}
         placeholder={placeholder}
         aria-describedby={hintId}

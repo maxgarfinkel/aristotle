@@ -1,10 +1,11 @@
 import { useEffect } from 'react'
-import { getRouteApi, Link, useNavigate } from '@tanstack/react-router'
+import { getRouteApi, useNavigate } from '@tanstack/react-router'
 import type { ModuleSummary } from '../types/module'
 import { useModuleDetails } from '../hooks/useModuleDetails'
-import Header from '../components/Header/Header'
+import PageLayout from '../components/PageLayout/PageLayout'
 import FormField from '../components/FormField/FormField'
 import Button from '../components/Button/Button'
+import LinkButton from '../components/LinkButton/LinkButton'
 
 const routeApi = getRouteApi('/modules')
 
@@ -27,72 +28,62 @@ export default function ModuleDetailsPage() {
   }, [])
 
   return (
-    <div className="flex min-h-screen flex-col bg-gray-50">
-      <Header />
-      <main className="flex-1 px-4 py-12 sm:px-6">
-        <div className="mx-auto max-w-2xl">
-          <div className="mb-8">
-            <h1 className="mb-3 text-3xl font-bold text-gray-900 sm:text-4xl">Your modules</h1>
-            <p className="text-base leading-relaxed text-gray-600">
-              Enter the name, credit value, and number of assessments for each of your modules.
-            </p>
-          </div>
+    <PageLayout>
+      <div className="mb-8">
+        <h1 className="mb-3 text-3xl font-bold text-gray-900 sm:text-4xl">Your modules</h1>
+        <p className="text-base leading-relaxed text-gray-600">
+          Enter the name, credit value, and number of assessments for each of your modules.
+        </p>
+      </div>
 
-          <div className="flex flex-col gap-4">
-            {entries.map((entry, index) => (
-              <div
-                key={index}
-                className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm"
-              >
-                <fieldset className="m-0 border-0 p-0">
-                  <legend className="mb-4 text-sm font-semibold text-gray-500">
-                    Module {index + 1}
-                  </legend>
-                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-[1fr_6rem_8rem]">
-                    <FormField
-                      id={`module-${index}-name`}
-                      label="Module name"
-                      value={entry.name}
-                      onChange={(name) => updateName(index, name)}
-                      placeholder="e.g. Mathematics"
-                    />
-                    <FormField
-                      id={`module-${index}-cats`}
-                      label="CATS"
-                      type="number"
-                      value={entry.catsInput}
-                      onChange={(cats) => updateCats(index, cats)}
-                      min={1}
-                      step={1}
-                      placeholder="e.g. 30"
-                    />
-                    <FormField
-                      id={`module-${index}-assessments`}
-                      label="Assessments"
-                      type="number"
-                      value={entry.assessmentsInput}
-                      onChange={(assessments) => updateAssessments(index, assessments)}
-                      min={1}
-                      step={1}
-                      placeholder="e.g. 3"
-                    />
-                  </div>
-                </fieldset>
+      <div className="flex flex-col gap-4">
+        {entries.map((entry, index) => (
+          <div
+            key={index}
+            className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm"
+          >
+            <fieldset className="m-0 border-0 p-0">
+              <legend className="mb-4 text-sm font-semibold text-gray-500">
+                Module {index + 1}
+              </legend>
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-[1fr_6rem_8rem]">
+                <FormField
+                  id={`module-${index}-name`}
+                  label="Module name"
+                  value={entry.name}
+                  onChange={(name) => updateName(index, name)}
+                  placeholder="e.g. Mathematics"
+                />
+                <FormField
+                  id={`module-${index}-cats`}
+                  label="CATS"
+                  type="number"
+                  value={entry.catsInput}
+                  onChange={(cats) => updateCats(index, cats)}
+                  min={1}
+                  step={1}
+                  placeholder="e.g. 30"
+                />
+                <FormField
+                  id={`module-${index}-assessments`}
+                  label="Assessments"
+                  type="number"
+                  value={entry.assessmentsInput}
+                  onChange={(assessments) => updateAssessments(index, assessments)}
+                  min={1}
+                  step={1}
+                  placeholder="e.g. 3"
+                />
               </div>
-            ))}
+            </fieldset>
           </div>
+        ))}
+      </div>
 
-          <div className="mt-8 flex items-center justify-between">
-            <Link
-              to="/"
-              className="inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-6 py-3 text-base font-semibold text-gray-700 transition-colors hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"
-            >
-              Back
-            </Link>
-            <Button disabled={!isValid} onClick={handleNext}>Next</Button>
-          </div>
-        </div>
-      </main>
-    </div>
+      <div className="mt-8 flex items-center justify-between">
+        <LinkButton to="/">Back</LinkButton>
+        <Button disabled={!isValid} onClick={handleNext}>Next</Button>
+      </div>
+    </PageLayout>
   )
 }

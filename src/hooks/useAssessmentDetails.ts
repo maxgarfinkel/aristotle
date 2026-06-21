@@ -1,6 +1,8 @@
 import { useEffect } from 'react'
 import type { ModuleSummary, AssessmentFormEntry } from '../types/module'
 import { useWizardContext } from '../context/WizardContext'
+import { tomorrow } from '../services/dateUtils'
+import { assessmentFormEntrySchema } from '../services/schemas'
 
 interface UseAssessmentDetailsResult {
   moduleEntries: AssessmentFormEntry[][]
@@ -11,12 +13,6 @@ interface UseAssessmentDetailsResult {
     field: keyof AssessmentFormEntry,
     value: string,
   ) => void
-}
-
-function tomorrow(): string {
-  const now = new Date()
-  const next = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1))
-  return next.toISOString().substring(0, 10)
 }
 
 export function useAssessmentDetails(modules: ModuleSummary[]): UseAssessmentDetailsResult {
@@ -63,19 +59,11 @@ export function useAssessmentDetails(modules: ModuleSummary[]): UseAssessmentDet
 
   const isValid =
     assessmentEntries.length > 0 &&
-    assessmentEntries.every((assessments) => {
-      if (assessments.length === 0) return false
-      return assessments.every((a) => {
-        const pct = Number(a.percentageInput)
-        return (
-          a.name.trim() !== '' &&
-          pct > 0 &&
-          pct <= 100 &&
-          a.deadline !== '' &&
-          a.deadline > a.startDate
-        )
-      })
-    })
+    assessmentEntries.every(
+      (assessments) =>
+        assessments.length > 0 &&
+        assessments.every((a) => assessmentFormEntrySchema.safeParse(a).success),
+    )
 
   const updateField = (
     moduleIndex: number,

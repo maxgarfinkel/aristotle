@@ -34,4 +34,14 @@ describe('FormField', () => {
     render(<FormField id="test" label="Date" type="date" value="" onChange={() => {}} />)
     expect(screen.getByLabelText('Date')).toHaveAttribute('type', 'date')
   })
+
+  it('disables the input when disabled is true', () => {
+    render(<FormField id="test" label="Test" value="" onChange={() => {}} disabled />)
+    expect(screen.getByLabelText('Test')).toBeDisabled()
+  })
+
+  it('applies the max attribute when provided', () => {
+    render(<FormField id="test" label="Test" type="number" value="" onChange={() => {}} max={100} />)
+    expect(screen.getByLabelText('Test')).toHaveAttribute('max', '100')
+  })
 })

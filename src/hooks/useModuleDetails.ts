@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import type { ModuleFormEntry } from '../types/module'
 import { useWizardContext } from '../context/WizardContext'
+import { moduleFormEntrySchema } from '../services/schemas'
 
 interface UseModuleDetailsResult {
   entries: ModuleFormEntry[]
@@ -37,17 +38,7 @@ export function useModuleDetails(count: number): UseModuleDetailsResult {
 
   const isValid =
     modules.length > 0 &&
-    modules.every((e) => {
-      const cats = Number(e.catsInput)
-      const assessments = Number(e.assessmentsInput)
-      return (
-        e.name.trim() !== '' &&
-        Number.isInteger(cats) &&
-        cats >= 1 &&
-        Number.isInteger(assessments) &&
-        assessments >= 1
-      )
-    })
+    modules.every((e) => moduleFormEntrySchema.safeParse(e).success)
 
   const updateName = (index: number, name: string) => {
     setModules((prev) => prev.map((e, i) => (i === index ? { ...e, name } : e)))

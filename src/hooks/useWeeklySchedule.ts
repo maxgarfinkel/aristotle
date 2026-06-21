@@ -1,5 +1,6 @@
 import { useWizardContext } from '../context/WizardContext'
 import type { WeeklySchedule } from '../types/schedule'
+import { weeklyScheduleSchema } from '../services/schemas'
 
 export const DAYS_OF_WEEK = [
   'Monday',
@@ -21,22 +22,7 @@ interface UseWeeklyScheduleResult {
 export function useWeeklySchedule(): UseWeeklyScheduleResult {
   const { weeklySchedule, toggleScheduleDay, updateScheduleDay } = useWizardContext()
 
-  const isValid =
-    weeklySchedule.some((day) => day.enabled) &&
-    weeklySchedule
-      .filter((day) => day.enabled)
-      .every((day) => {
-        const hours = Number(day.hoursInput)
-        const minutes = Number(day.minutesInput)
-        return (
-          Number.isInteger(hours) &&
-          hours >= 0 &&
-          Number.isInteger(minutes) &&
-          minutes >= 0 &&
-          minutes <= 59 &&
-          (hours > 0 || minutes > 0)
-        )
-      })
+  const isValid = weeklyScheduleSchema.safeParse(weeklySchedule).success
 
   return { schedule: weeklySchedule, isValid, toggleDay: toggleScheduleDay, updateDay: updateScheduleDay }
 }
