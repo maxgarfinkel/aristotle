@@ -1,5 +1,5 @@
 import { Fragment, useEffect } from 'react'
-import { Link, useLocation } from '@tanstack/react-router'
+import { Link, useLocation, useNavigate } from '@tanstack/react-router'
 import { useWeeklySchedule, DAYS_OF_WEEK } from '../hooks/useWeeklySchedule'
 import Header from '../components/Header/Header'
 import Button from '../components/Button/Button'
@@ -8,6 +8,11 @@ export default function WeeklySchedulePage() {
   const location = useLocation()
   const modules = location.state.modules ?? []
   const { schedule, isValid, toggleDay, updateDay } = useWeeklySchedule()
+  const navigate = useNavigate()
+
+  const handleNext = () => {
+    void navigate({ to: '/results', state: { modules } })
+  }
 
   useEffect(() => {
     document.title = 'Weekly schedule – Aristotle'
@@ -101,7 +106,7 @@ export default function WeeklySchedulePage() {
             >
               Back
             </Link>
-            <Button disabled={!isValid}>Next</Button>
+            <Button disabled={!isValid} onClick={handleNext}>Next</Button>
           </div>
         </div>
       </main>

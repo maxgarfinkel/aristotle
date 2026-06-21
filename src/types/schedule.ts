@@ -16,3 +16,21 @@ export interface DaySchedule {
  * when per-week variation is supported.
  */
 export type WeeklySchedule = DaySchedule[]
+
+export interface StudySession {
+  date: string
+  moduleName: string
+  assessmentName: string
+  hours: number
+}
+
+export interface ScheduleWarning {
+  moduleName: string
+  assessmentName: string
+  message: string
+}
+
+export interface ScheduleResult {
+  sessions: StudySession[]
+  warnings: ScheduleWarning[]
+}

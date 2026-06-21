@@ -78,4 +78,21 @@ describe('WeeklySchedulePage', () => {
       await screen.findByRole('heading', { name: /assessment details/i }),
     ).toBeInTheDocument()
   })
+
+  it('navigates to the results page on Next click when valid', async () => {
+    const user = userEvent.setup()
+    await renderRoute('/schedule', { modules })
+
+    const switches = screen.getAllByRole('switch')
+    for (let i = 1; i < 7; i++) {
+      await user.click(switches[i]!)
+    }
+    await user.type(screen.getByLabelText('Monday hours'), '2')
+
+    await user.click(screen.getByRole('button', { name: /next/i }))
+
+    expect(
+      await screen.findByRole('heading', { name: /study schedule/i }),
+    ).toBeInTheDocument()
+  })
 })
