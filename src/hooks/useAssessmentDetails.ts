@@ -20,34 +20,46 @@ function tomorrow(): string {
 }
 
 export function useAssessmentDetails(modules: ModuleSummary[]): UseAssessmentDetailsResult {
-  const { assessmentEntries, setAssessmentEntries } = useWizardContext()
+  // Renamed to avoid shadowing the `modules` parameter above.
+  const { modules: wizardModules, setModules } = useWizardContext()
 
-  // Reconcile context assessment rows with the current module structure.
+  // Reconcile each module's assessments array with the count from ModuleSummary.
   // Uses the functional setState form so we read the latest stored entries
-  // without listing assessmentEntries as a dep (which would re-run on every
-  // field edit). Returns the same row reference when length is unchanged so
-  // that the provider's identity check avoids a state update.
+  // without listing wizardModules as a dep (which would re-run on every edit).
+  // Returns the same module reference when its assessments are already correct,
+  // so the provider's identity check avoids unnecessary re-renders.
   useEffect(() => {
-    setAssessmentEntries((current) => {
+    setModules((current) => {
       const reconciled = modules.map((m, i) => {
-        const row = current[i] ?? []
-        if (row.length === m.assessmentCount) return row
-        if (m.assessmentCount < row.length) return row.slice(0, m.assessmentCount)
-        return [
-          ...row,
-          ...Array.from({ length: m.assessmentCount - row.length }, () => ({
-            name: '',
-            percentageInput: '',
-            startDate: tomorrow(),
-            deadline: '',
-          })),
-        ]
+        const wizardModule = current[i] ?? {
+          name: '',
+          catsInput: '',
+          assessmentsInput: '',
+          assessments: [],
+        }
+        const row = wizardModule.assessments
+        if (row.length === m.assessmentCount) return wizardModule
+        const newAssessments =
+          m.assessmentCount < row.length
+            ? row.slice(0, m.assessmentCount)
+            : [
+                ...row,
+                ...Array.from({ length: m.assessmentCount - row.length }, () => ({
+                  name: '',
+                  percentageInput: '',
+                  startDate: tomorrow(),
+                  deadline: '',
+                })),
+              ]
+        return { ...wizardModule, assessments: newAssessments }
       })
       const unchanged =
-        reconciled.length === current.length && reconciled.every((row, i) => row === current[i])
+        reconciled.length === current.length && reconciled.every((m, i) => m === current[i])
       return unchanged ? current : reconciled
     })
-  }, [modules, setAssessmentEntries])
+  }, [modules, setModules])
+
+  const assessmentEntries = wizardModules.map((m) => m.assessments)
 
   const isValid =
     assessmentEntries.length > 0 &&
@@ -71,11 +83,16 @@ export function useAssessmentDetails(modules: ModuleSummary[]): UseAssessmentDet
     field: keyof AssessmentFormEntry,
     value: string,
   ) => {
-    setAssessmentEntries((prev) =>
-      prev.map((assessments, mi) =>
+    setModules((prev) =>
+      prev.map((m, mi) =>
         mi === moduleIndex
-          ? assessments.map((a, ai) => (ai === assessmentIndex ? { ...a, [field]: value } : a))
-          : assessments,
+          ? {
+              ...m,
+              assessments: m.assessments.map((a, ai) =>
+                ai === assessmentIndex ? { ...a, [field]: value } : a,
+              ),
+            }
+          : m,
       ),
     )
   }

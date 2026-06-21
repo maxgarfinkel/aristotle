@@ -11,13 +11,15 @@ interface UseModuleDetailsResult {
 }
 
 export function useModuleDetails(count: number): UseModuleDetailsResult {
-  const { moduleEntries, setModuleEntries } = useWizardContext()
+  const { modules, setModules } = useWizardContext()
 
-  // Reconcile context entry count with the URL ?count param.
+  // Reconcile context module count with the URL ?count param.
   // Uses the functional setState form so we read the latest state without
-  // listing moduleEntries as a dep (which would re-run on every keystroke).
+  // listing modules as a dep (which would re-run on every keystroke).
+  // New modules are initialised with an empty assessments array, which
+  // useAssessmentDetails will populate when the user reaches that step.
   useEffect(() => {
-    setModuleEntries((current) => {
+    setModules((current) => {
       if (current.length === count) return current
       return count > current.length
         ? [
@@ -26,15 +28,16 @@ export function useModuleDetails(count: number): UseModuleDetailsResult {
               name: '',
               catsInput: '',
               assessmentsInput: '',
+              assessments: [],
             })),
           ]
         : current.slice(0, count)
     })
-  }, [count, setModuleEntries])
+  }, [count, setModules])
 
   const isValid =
-    moduleEntries.length > 0 &&
-    moduleEntries.every((e) => {
+    modules.length > 0 &&
+    modules.every((e) => {
       const cats = Number(e.catsInput)
       const assessments = Number(e.assessmentsInput)
       return (
@@ -47,16 +50,24 @@ export function useModuleDetails(count: number): UseModuleDetailsResult {
     })
 
   const updateName = (index: number, name: string) => {
-    setModuleEntries((prev) => prev.map((e, i) => (i === index ? { ...e, name } : e)))
+    setModules((prev) => prev.map((e, i) => (i === index ? { ...e, name } : e)))
   }
 
   const updateCats = (index: number, catsInput: string) => {
-    setModuleEntries((prev) => prev.map((e, i) => (i === index ? { ...e, catsInput } : e)))
+    setModules((prev) => prev.map((e, i) => (i === index ? { ...e, catsInput } : e)))
   }
 
   const updateAssessments = (index: number, assessmentsInput: string) => {
-    setModuleEntries((prev) => prev.map((e, i) => (i === index ? { ...e, assessmentsInput } : e)))
+    setModules((prev) => prev.map((e, i) => (i === index ? { ...e, assessmentsInput } : e)))
   }
 
-  return { entries: moduleEntries, isValid, updateName, updateCats, updateAssessments }
+  // Strip assessments from each module before returning — this hook's public
+  // interface exposes ModuleFormEntry[], not the richer WizardModule type.
+  return {
+    entries: modules.map(({ name, catsInput, assessmentsInput }) => ({ name, catsInput, assessmentsInput })),
+    isValid,
+    updateName,
+    updateCats,
+    updateAssessments,
+  }
 }

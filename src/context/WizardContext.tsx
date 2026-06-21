@@ -1,36 +1,23 @@
 import { createContext, useContext } from 'react'
-import type { ModuleFormEntry, AssessmentFormEntry } from '../types/module'
-import type { WeeklySchedule } from '../types/schedule'
+import type { WizardModule } from '../types/module'
+import type { ScheduleWizard } from '../types/wizard'
 
-export interface WizardState {
-  countInput: string
-  moduleEntries: ModuleFormEntry[]
-  assessmentEntries: AssessmentFormEntry[][]
-  schedule: WeeklySchedule
-}
+export type { ScheduleWizard }
 
-export interface WizardContextValue extends WizardState {
-  setCountInput: (value: string) => void
-  setModuleEntries: (
-    entries: ModuleFormEntry[] | ((prev: ModuleFormEntry[]) => ModuleFormEntry[]),
-  ) => void
-  setAssessmentEntries: (
-    entries:
-      | AssessmentFormEntry[][]
-      | ((prev: AssessmentFormEntry[][]) => AssessmentFormEntry[][]),
-  ) => void
+export interface WizardContextValue extends ScheduleWizard {
+  setNumberOfModules: (value: string) => void
+  setModules: (modules: WizardModule[] | ((prev: WizardModule[]) => WizardModule[])) => void
   toggleScheduleDay: (dayIndex: number) => void
   updateScheduleDay: (dayIndex: number, field: 'hoursInput' | 'minutesInput', value: string) => void
 }
 
 export const WizardContext = createContext<WizardContextValue | null>(null)
 
-export const defaultWizardState: WizardState = {
-  countInput: '',
-  moduleEntries: [],
-  assessmentEntries: [],
+export const defaultScheduleWizard: ScheduleWizard = {
+  numberOfModules: '',
+  modules: [],
   // 7 days (Mon–Sun), all enabled, no hours/minutes entered yet
-  schedule: Array.from({ length: 7 }, () => ({ enabled: true, hoursInput: '', minutesInput: '' })),
+  weeklySchedule: Array.from({ length: 7 }, () => ({ enabled: true, hoursInput: '', minutesInput: '' })),
 }
 
 export function useWizardContext(): WizardContextValue {

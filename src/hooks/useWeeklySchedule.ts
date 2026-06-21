@@ -19,11 +19,11 @@ interface UseWeeklyScheduleResult {
 }
 
 export function useWeeklySchedule(): UseWeeklyScheduleResult {
-  const { schedule, toggleScheduleDay, updateScheduleDay } = useWizardContext()
+  const { weeklySchedule, toggleScheduleDay, updateScheduleDay } = useWizardContext()
 
   const isValid =
-    schedule.some((day) => day.enabled) &&
-    schedule
+    weeklySchedule.some((day) => day.enabled) &&
+    weeklySchedule
       .filter((day) => day.enabled)
       .every((day) => {
         const hours = Number(day.hoursInput)
@@ -38,5 +38,5 @@ export function useWeeklySchedule(): UseWeeklyScheduleResult {
         )
       })
 
-  return { schedule, isValid, toggleDay: toggleScheduleDay, updateDay: updateScheduleDay }
+  return { schedule: weeklySchedule, isValid, toggleDay: toggleScheduleDay, updateDay: updateScheduleDay }
 }

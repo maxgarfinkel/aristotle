@@ -4,6 +4,7 @@ import ModuleCountPage from './pages/ModuleCountPage'
 import ModuleDetailsPage from './pages/ModuleDetailsPage'
 import AssessmentDetailsPage from './pages/AssessmentDetailsPage'
 import WeeklySchedulePage from './pages/WeeklySchedulePage'
+import ScheduleResultPage from './pages/ScheduleResultPage'
 
 const rootRoute = createRootRoute({
   component: Outlet,
@@ -51,11 +52,18 @@ const scheduleRoute = createRoute({
   component: WeeklySchedulePage,
 })
 
+const resultRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/result',
+  component: ScheduleResultPage,
+})
+
 export const routeTree = rootRoute.addChildren([
   indexRoute,
   modulesRoute,
   assessmentsRoute,
   scheduleRoute,
+  resultRoute,
 ])
 
 export const router = createRouter({ routeTree })

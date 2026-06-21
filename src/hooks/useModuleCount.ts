@@ -8,9 +8,9 @@ interface UseModuleCountResult {
 }
 
 export function useModuleCount(): UseModuleCountResult {
-  const { countInput, setCountInput } = useWizardContext()
-  const num = Number(countInput)
-  const isValid = countInput.trim() !== '' && Number.isInteger(num) && num >= 1
+  const { numberOfModules, setNumberOfModules } = useWizardContext()
+  const num = Number(numberOfModules)
+  const isValid = numberOfModules.trim() !== '' && Number.isInteger(num) && num >= 1
   const count = isValid ? num : null
-  return { value: countInput, count, isValid, setValue: setCountInput }
+  return { value: numberOfModules, count, isValid, setValue: setNumberOfModules }
 }

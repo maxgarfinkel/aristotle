@@ -21,3 +21,17 @@ export interface AssessmentFormEntry {
   startDate: string
   deadline: string
 }
+
+export interface WizardAssessment {
+  name: string
+  percentageInput: string
+  startDate: string
+  deadline: string
+}
+
+export interface WizardModule {
+  name: string
+  catsInput: string
+  assessmentsInput: string
+  assessments: WizardAssessment[]
+}

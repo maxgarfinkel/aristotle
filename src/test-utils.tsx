@@ -1,9 +1,14 @@
-import { render } from '@testing-library/react'
+import { render, act } from '@testing-library/react'
 import { createRouter, createMemoryHistory, RouterProvider } from '@tanstack/react-router'
 import { routeTree } from './router'
 import WizardProvider from './context/WizardProvider'
+import type { ScheduleWizard } from './types/wizard'
 
-export async function renderRoute(path: string = '/', state: Record<string, unknown> = {}) {
+export async function renderRoute(
+  path: string = '/',
+  state: Record<string, unknown> = {},
+  initialWizardState: Partial<ScheduleWizard> = {},
+) {
   const parts = path.split('?')
   const pathname = parts[0] ?? '/'
   const rawSearch = parts[1]
@@ -17,9 +22,13 @@ export async function renderRoute(path: string = '/', state: Record<string, unkn
 
   const router = createRouter({ routeTree, history })
   await router.load()
-  return render(
-    <WizardProvider>
-      <RouterProvider router={router} />
-    </WizardProvider>,
-  )
+  let result!: ReturnType<typeof render>
+  await act(async () => {
+    result = render(
+      <WizardProvider initialState={initialWizardState}>
+        <RouterProvider router={router} />
+      </WizardProvider>,
+    )
+  })
+  return result
 }

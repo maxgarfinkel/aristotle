@@ -2,8 +2,28 @@ import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { renderRoute } from '../test-utils'
 import type { ModuleSummary } from '../types/module'
+import type { ScheduleWizard } from '../types/wizard'
 
 const modules: ModuleSummary[] = [{ name: 'Maths', cats: 30, assessmentCount: 1 }]
+
+// Full wizard state so the result page has data to render (Sep 7 2026 = Monday)
+const wizardWithAssessments: Partial<ScheduleWizard> = {
+  modules: [
+    {
+      name: 'Maths',
+      catsInput: '30',
+      assessmentsInput: '1',
+      assessments: [
+        {
+          name: 'Exam',
+          percentageInput: '100',
+          startDate: '2026-09-07',
+          deadline: '2026-09-11',
+        },
+      ],
+    },
+  ],
+}
 
 describe('WeeklySchedulePage', () => {
   it('redirects to / when no modules in state', async () => {
@@ -76,6 +96,23 @@ describe('WeeklySchedulePage', () => {
     await userEvent.click(screen.getByRole('link', { name: /back/i }))
     expect(
       await screen.findByRole('heading', { name: /assessment details/i }),
+    ).toBeInTheDocument()
+  })
+
+  it('navigates to the study plan when Next is clicked after filling in the schedule', async () => {
+    const user = userEvent.setup()
+    await renderRoute('/schedule', { modules }, wizardWithAssessments)
+
+    const switches = screen.getAllByRole('switch')
+    for (let i = 1; i < 7; i++) {
+      await user.click(switches[i]!)
+    }
+    await user.type(screen.getByLabelText('Monday hours'), '2')
+
+    await user.click(screen.getByRole('button', { name: /next/i }))
+
+    expect(
+      await screen.findByRole('heading', { name: /your study plan/i }),
     ).toBeInTheDocument()
   })
 })
