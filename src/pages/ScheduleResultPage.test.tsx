@@ -72,6 +72,11 @@ describe('ScheduleResultPage', () => {
     expect(timeLabels.length).toBe(5)
   })
 
+  it('renders a timeline segment with a tooltip for each assessment', async () => {
+    await renderRoute('/result', {}, validWizardState)
+    expect(document.querySelector('[title="Algorithms – Coursework"]')).not.toBeNull()
+  })
+
   it('renders a Back link that leads to the schedule page', async () => {
     await renderRoute('/result', {}, validWizardState)
     await userEvent.click(screen.getByRole('link', { name: /back/i }))

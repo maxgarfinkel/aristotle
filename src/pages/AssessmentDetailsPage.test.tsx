@@ -49,6 +49,15 @@ describe('AssessmentDetailsPage', () => {
     expect(await screen.findByRole('heading', { name: /your modules/i })).toBeInTheDocument()
   })
 
+  it('does not crash when the start date is partially deleted', async () => {
+    await renderRoute('/assessments', { modules: singleModule })
+    const startField = screen.getAllByLabelText('Start date')[0]!
+    // Simulate a partial date value that would result from clearing characters
+    fireEvent.change(startField, { target: { value: '2026-09' } })
+    // Page should still be mounted and interactive
+    expect(screen.getByRole('button', { name: /next/i })).toBeInTheDocument()
+  })
+
   it('navigates to weekly schedule page on Next click when valid', async () => {
     const user = userEvent.setup()
     await renderRoute('/assessments', { modules: singleModule })

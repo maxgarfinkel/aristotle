@@ -5,8 +5,8 @@ interface FormFieldProps {
   value: string
   onChange: (value: string) => void
   disabled?: boolean
-  min?: string | number
-  max?: string | number
+  min?: string | number | undefined
+  max?: string | number | undefined
   step?: number
   placeholder?: string
   hint?: string

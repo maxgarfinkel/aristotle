@@ -7,8 +7,12 @@ import FormField from '../components/FormField/FormField'
 import Button from '../components/Button/Button'
 import { LINK_BUTTON_CLASS } from '../components/LinkButton/LinkButton'
 
-/** Returns the day after `isoDate` as a YYYY-MM-DD string. */
-function dayAfter(isoDate: string): string {
+/**
+ * Returns the day after `isoDate` as a YYYY-MM-DD string, or `undefined`
+ * when `isoDate` is not a complete YYYY-MM-DD value (e.g. mid-edit).
+ */
+function dayAfter(isoDate: string): string | undefined {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(isoDate)) return undefined
   const [y, m, d] = isoDate.split('-').map(Number)
   return new Date(Date.UTC(y!, m! - 1, d! + 1)).toISOString().substring(0, 10)
 }

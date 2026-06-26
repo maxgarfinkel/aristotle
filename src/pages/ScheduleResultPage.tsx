@@ -5,6 +5,8 @@ import { useStudyPlan } from '../hooks/useStudyPlan'
 import type { ModuleSummary } from '../types/module'
 import PageLayout from '../components/PageLayout/PageLayout'
 import LinkButton from '../components/LinkButton/LinkButton'
+import ScheduleTimeline from '../components/ScheduleTimeline/ScheduleTimeline'
+import type { TimelineAssessment } from '../components/ScheduleTimeline/ScheduleTimeline'
 
 function formatMinutes(total: number): string {
   const h = Math.floor(total / 60)
@@ -42,6 +44,15 @@ export default function ScheduleResultPage() {
 
   if (modules.length === 0) return null
 
+  const timelineAssessments: TimelineAssessment[] = modules.flatMap((m) =>
+    m.assessments.map((a) => ({
+      moduleName: m.name,
+      assessmentName: a.name,
+      startDate: a.startDate,
+      deadline: a.deadline,
+    })),
+  )
+
   const moduleSummaries: ModuleSummary[] = modules.map((m) => ({
     name: m.name,
     cats: parseInt(m.catsInput, 10),
@@ -63,6 +74,10 @@ export default function ScheduleResultPage() {
         <p className="text-base leading-relaxed text-gray-600">
           A personalised schedule based on your modules, assessments, and weekly availability.
         </p>
+      </div>
+
+      <div className="mb-6">
+        <ScheduleTimeline assessments={timelineAssessments} />
       </div>
 
       <section className="mb-8" aria-labelledby="summary-heading">
