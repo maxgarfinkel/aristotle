@@ -84,3 +84,4 @@ Coverage target: **80% minimum** (enforced by Vitest thresholds — `npm run tes
 Test files live adjacent to the source file: `Button.tsx` → `Button.test.tsx`. Do not test internal state or implementation details.
 
 Full details: [`docs/architecture.md`](docs/architecture.md), [`docs/frontend-standards.md`](docs/frontend-standards.md), [`docs/testing-strategy.md`](docs/testing-strategy.md).
+
