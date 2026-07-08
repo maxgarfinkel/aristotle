@@ -1,4 +1,4 @@
-import { createRootRoute, createRoute, createRouter, Outlet, redirect } from '@tanstack/react-router'
+import { createRootRoute, createRoute, createRouter, createHashHistory, Outlet, redirect } from '@tanstack/react-router'
 import type { ModuleSummary } from './types/module'
 import ModuleCountPage from './pages/ModuleCountPage'
 import ModuleDetailsPage from './pages/ModuleDetailsPage'
@@ -66,7 +66,7 @@ export const routeTree = rootRoute.addChildren([
   resultRoute,
 ])
 
-export const router = createRouter({ routeTree })
+export const router = createRouter({ routeTree, history: createHashHistory() })
 
 declare module '@tanstack/react-router' {
   interface Register {

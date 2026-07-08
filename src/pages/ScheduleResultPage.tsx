@@ -4,9 +4,11 @@ import { useWizardContext } from '../context/WizardContext'
 import { useStudyPlan } from '../hooks/useStudyPlan'
 import type { ModuleSummary } from '../types/module'
 import PageLayout from '../components/PageLayout/PageLayout'
+import Button from '../components/Button/Button'
 import LinkButton from '../components/LinkButton/LinkButton'
 import ScheduleTimeline from '../components/ScheduleTimeline/ScheduleTimeline'
 import type { TimelineAssessment } from '../components/ScheduleTimeline/ScheduleTimeline'
+import { buildIcsContent } from '../services/icsService'
 
 function formatMinutes(total: number): string {
   const h = Math.floor(total / 60)
@@ -150,8 +152,20 @@ export default function ScheduleResultPage() {
         </div>
       </section>
 
-      <div className="mt-8">
+      <div className="mt-8 flex flex-wrap items-center gap-3">
         <LinkButton to="/schedule" state={{ modules: moduleSummaries }}>Back</LinkButton>
+        <Button onClick={() => {
+          const content = buildIcsContent(plan.dayEntries)
+          const blob = new Blob([content], { type: 'text/calendar;charset=utf-8' })
+          const url = URL.createObjectURL(blob)
+          const a = document.createElement('a')
+          a.href = url
+          a.download = 'study-plan.ics'
+          document.body.appendChild(a)
+          a.click()
+          document.body.removeChild(a)
+          URL.revokeObjectURL(url)
+        }}>Download .ics</Button>
       </div>
     </PageLayout>
   )

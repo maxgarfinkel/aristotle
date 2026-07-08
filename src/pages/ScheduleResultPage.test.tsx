@@ -1,5 +1,6 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { vi, beforeEach } from 'vitest'
 import { renderRoute } from '../test-utils'
 import type { ScheduleWizard } from '../types/wizard'
 
@@ -83,6 +84,30 @@ describe('ScheduleResultPage', () => {
     expect(
       await screen.findByRole('heading', { name: /weekly schedule/i }),
     ).toBeInTheDocument()
+  })
+
+  describe('Download .ics button', () => {
+    beforeEach(() => {
+      vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:mock')
+      vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => undefined)
+    })
+
+    it('renders a "Download .ics" button', async () => {
+      await renderRoute('/result', {}, validWizardState)
+      expect(screen.getByRole('button', { name: /download \.ics/i })).toBeInTheDocument()
+    })
+
+    it('calls URL.createObjectURL when the button is clicked', async () => {
+      await renderRoute('/result', {}, validWizardState)
+      await userEvent.click(screen.getByRole('button', { name: /download \.ics/i }))
+      expect(URL.createObjectURL).toHaveBeenCalledOnce()
+    })
+
+    it('calls URL.revokeObjectURL to clean up after download', async () => {
+      await renderRoute('/result', {}, validWizardState)
+      await userEvent.click(screen.getByRole('button', { name: /download \.ics/i }))
+      expect(URL.revokeObjectURL).toHaveBeenCalledWith('blob:mock')
+    })
   })
 
   describe('two-module plan', () => {
