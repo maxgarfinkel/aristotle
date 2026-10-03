@@ -166,6 +166,9 @@ export default function ScheduleResultPage() {
           document.body.removeChild(a)
           URL.revokeObjectURL(url)
         }}>Download .ics</Button>
+        <p className="text-sm text-amber-700 dark:text-amber-400">
+          Tip: import into a <strong>new, separate calendar</strong> so you can delete all study events at once without affecting your main calendar.
+        </p>
       </div>
     </PageLayout>
   )
